@@ -79,7 +79,7 @@ void MainWindow::on_actionSave_triggered() {
 }
 
 void MainWindow::on_actionExit_triggered() {
-    QApplication.quit();
+    QApplication::quit();
 }
 
 void MainWindow::on_actionCopy_triggered() {
