@@ -6,6 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
       ui(new Ui::MainWindow) {
     ui->setupUi(this);
     this->setCentralWidget(ui->textEdit);
+    setWindowTitle("CrustyPad");
 }
 
 MainWindow::~MainWindow() {
@@ -14,14 +15,16 @@ MainWindow::~MainWindow() {
 
 // Slot Methods:
 void MainWindow::on_actionNew_triggered() {
-    currentFile.clear();
+    setWindowTitle("CrustyPad");
+    currentFilename.clear();
     ui->textEdit->setText(QString());
 }
 
 void MainWindow::on_actionOpen_triggered() {
     QString filename = QFileDialog::getOpenFileName(this, "Open File");
     QFile file(filename);
-    currentFile = filename;
+
+    currentFilename = filename;
 
     if (!file.open(QIODevice::ReadOnly | QFile::Text)) {
         QMessageBox::warning(this, "Warning", "Cannot open file: " + file.errorString());
@@ -38,10 +41,11 @@ void MainWindow::on_actionOpen_triggered() {
     file.close();
 }
 
-void MainWindow::on_actionSave_triggered() {
+void MainWindow::on_actionSaveAs_triggered() {
     QString filename = QFileDialog::getSaveFileName(this, "Save File");
     QFile file(filename);
-    currentFile = file;
+
+    currentFilename = filename;
 
     if (!file.open(QIODevice::WriteOnly | QFile::Text)) {
         QMessageBox::warning(this, "Warning", "Cannot save file: " + file.errorString());
@@ -54,6 +58,22 @@ void MainWindow::on_actionSave_triggered() {
     QString text = ui->textEdit->toPlainText();
 
     out << text;
+
+    file.close();
+}
+
+void MainWindow::on_actionSave_triggered() {
+    QFile file(currentFilename);
+    QTextStream stream(&file);
+
+    if (!file.open(QIODevice::WriteOnly | QFile::Text)) {
+        QMessageBox::warning(this, "Warning", "Cannot save file: " + file.errorString());
+        return;
+    }
+
+    QString text = ui->textEdit->toPlainText();
+
+    stream << text;
 
     file.close();
 }
